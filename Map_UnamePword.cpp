@@ -29,20 +29,42 @@ public:
 
 int main()
 {
-    cout << "Map: Username and Password" << endl;
+	int run = 1;
+    int option;
 
-    map<string, string> userData;
+    while (run == 1) {
+        
 
-	userData["john_doe"] = "password123";
+        map<string, string> userData;
+        userData["john_doe"] = "password123";
 
-    string nameSearch = "john_doe";
+        cout << "Map: Username and Password" << endl;
 
-    if (userData.find(nameSearch) != userData.end()) {
-        cout << "User found: " << nameSearch << endl;
-    } else {
-        cout << "User not found: " << nameSearch << endl;
-    }
+        cout << "[1] Login [2] Exit" << endl;
+        cin >> option;
+        switch (option) {
+        
+            case 1:
+                string username, password;
+                cout << "Enter username: ";
+                cin >> username;
+                cout << "Enter password: ";
+                cin >> password;
+                if (userData.find(username) != userData.end() && userData[username] == password) {
+                    cout << "Login successful!\n" << endl;
 
+                } else {
+                    cout << "Invalid username or password." << endl;
+                }
+				break;
+        
+               
+        }
+
+
+    };
+   
+    //Adding Data to the map
 
 
 
