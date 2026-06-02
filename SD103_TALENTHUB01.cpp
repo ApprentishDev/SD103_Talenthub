@@ -1,9 +1,12 @@
 // SD103_TALENTHUB01.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//USE CAMELCASE
+//USE CAMELCASE !!!!!
 
 #include <iostream>
 #include <vector>
 #include <map>
+#include <cctype> //std::isalpha
+#include <random>
+#include <iomanip> // std::setw and std::setfill
 using namespace std;
 
 
@@ -12,25 +15,25 @@ class User {
 private:
 
     string firstName;
-    string lastname;
+    string lastName;
     int idNumber;
 public:
 
-    User(string firstName, string lastname, int idNumber) {
+    User(string firstName, string lastName, int idNumber) {
         this->firstName = firstName;
-        this->lastname = lastname;
+        this->lastName = lastName;
         this->idNumber = idNumber;
     }
 
     void getInfo() {
 
         cout << "\n | First name: " << firstName;
-        cout << "\n | Last name: " << lastname;
+        cout << "\n | Last name: " << lastName;
         cout << "\n | ID Number: " << idNumber << endl;
     }
 
     string getName() const {
-        return firstName + " " + lastname;
+        return firstName + " " + lastName;
     }
 };
 
@@ -45,7 +48,7 @@ private:
 public:
 
 
-    Student(string firstName, string lastname, int idNumber) : User(firstName, lastname, idNumber) {
+    Student(string firstName, string lastName, int idNumber) : User(firstName, lastName, idNumber) {
     };
 
 
@@ -69,8 +72,9 @@ int main()
     //run 1 = admin
     int run = 1;
     int program = 1;
+    int signin = 1;
     int option, stOption;
-    string studentIn;
+    
     std::cout << "Hello World!\n";
 
     vector<Student> dmtcStudents;
@@ -80,24 +84,32 @@ int main()
     //MAP for username and password registered
     map<string, string> userDatas;
 
-    //-------Sample contents---------------------
-    Student student2("Britney", "Spranks", 10052);
-    Student student1("Spongebob", "Squarepants", 12345);
-    Student student3("Batman", "Mbiyonde", 1998);
+	//MAP for admin username and password
+	map<string, string> adminDatas;
 
-    Student student4("Rom", "Jerusalem", 3119);
+    //-------Sample contents---------------------
+    Student student2("Britney", "Spranks", 20260052);
+    Student student1("Spongebob", "Squarepants", 20262345);
+    Student student3("Batman", "Mbiyonde", 20261998);
+
+    Student student4("Rom", "Jerusalem", 20263119);
 
     dmtcStudents.push_back(student2);
     dmtcStudents.push_back(student1);
 	intlStudents.push_back(student4);
 	dmtcStudents.push_back(student3);
 
+	userDatas["rjerusalem2016@gmail.com"] = "password123";
+	adminDatas["admin01"] = "admin01";
+
+
     
    
     //STUDENT START
     while (program == 1){
 
-        cout<<"------TALENTHUB------|"<<endl;
+        cout << "\n---------------------------------|" << endl;
+        cout << "\n------------TALENTHUB------------|"<<endl;
         cout << "[1] Student Sign in" << endl;
         cout << "[2] Student Sign up" << endl;
 	    cout << "[3] Admin Sign in" << endl;
@@ -106,45 +118,90 @@ int main()
 
         switch (run) {
 
-            case 1: {
-                cout << "\n---------------------------------" << endl;
-                cout << "\n--- Student Management System ---" << endl;
-                cout << "\n---------------------------------" << endl;
-                cout << "\n--------      STUDENT       -------" << endl;
-                cout << "\n---------------------------------" << endl;
+            case 1: 
+            {
+                signin:
+				cout << "------STUDENT SIGN IN------|" << endl;
+				cout << "[1] Login | [2] Back to main menu" << endl;
+				cin >> signin;
+                if (cin.fail()) {
+                    cout << "Invalid input. Please enter a number." << endl;
+                    // CODE WHEN A CHARACTER IS INPUTTED
+                    cin.clear(); // 1. Clear the error flags
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // 2. Discard the bad input
+
+                    goto signin;
+                }
+                
+                switch (signin)
+                {
+                    case 1:
+                    {
+                        string username, password;
+                        cout << "\n---------------------------------|" << endl;
+                        cout << "\n--------STUDENT SIGN IN----------|" << endl;
+                        cout << "Enter username and password: " << endl;
+						cout << "Username: ";
+                        cin >> username;
+                        cout << "Password: ";
+                        cin >> password;
+
+                        if (userDatas.find(username) != userDatas.end() && userDatas[username] == password) {
+                            cout << "Signin successful!\n" << endl;
+
+                        }
+                        else {
+                            cin.clear();
+                            cout << "Invalid username or password." << endl;
+							
+                            break;
+                        }
+                        
+                        cout << "\n---------------------------------|" << endl;
+                        cout << "\n--- Student Management System ---|" << endl;
+                        cout << "\n---------------------------------|" << endl;
+                        cout << "\n--------     STUDENT     --------|" << endl;
+                        cout << "\n---------------------------------|" << endl;
 
 
 
-                cout << "\n[1] Sign-up to additional course (0/3)" << endl;
-                cout << "\n[2] Logout" << endl;
-                cin >> stOption;
-                    switch (stOption) {
-                        case 1: {
+                        cout << "\n[1] Sign-up to additional course (0/3)" << endl;
+                        cout << "\n[2] Logout" << endl;
+                        cin >> stOption;
+                        switch (stOption)
+                        {
+                        case 1: 
+                            {
                             cout << "[1] Selected\n";
                             cout << "------------------------------| \n";
                             cout << "Available courses: \n";
 
                             break;
-						}
+                            }
 
-                        case 2: {
+                        case 2: 
+                            {
                             cout << "[2] Selected\n";
                             run = 0;
-							break;
-                        }
+                            break;
+                            }
 
-					}
+                        }
+                    }
+
+                }
 
                 break;
                 //While run==1 end
             }
     
 
-           //STUDENT SIGN UP START
+           //STUDENT SIGN UP START - NO FUNCTION
             case 2: {
 		        string pwAttempt1, pwAttempt2;
-		        string studentEmail, fullName;
-		        int mobileNumber;
+		        string studentEmail, firstName, lastName;
+		        int idNumber, mobileNumber, studentType;
+                bool domestic = true;
                 cout << "\n---------------------------------" << endl;
                 cout << "\n--- Student Management System ---" << endl;
                 cout << "\n---------------------------------" << endl;
@@ -171,15 +228,59 @@ int main()
           
                 }
                 signup2:
-                cout << "\nFull name: ";
-                cin >> fullName;
+                cout << "\nFirst name: ";
+                cin >> firstName;
+				cout << "\nLast name: ";
+                cin >> lastName;
                 cout << "Mobile number:";
                 cin >> mobileNumber;
+
+                cout<<" [1] Domestic | [2] International" << endl;
+                cin >> studentType;
+                //
+				// ------RANDOM START   Add Random number generator for ID number
+
+                std::random_device rd;
+                std::mt19937 gen(rd());
+
+                // Define the range for any 4-digit number
+                std::uniform_int_distribution<> distrib(0, 9999);
+
+                int random_num = distrib(gen);
+
+                vector <int> student_numbers;
+                int newStudentNumber = 20260000 + random_num;
+				idNumber = newStudentNumber;
+
+                // ------RANDOM END   --------------------------------------------|
+
+                if(studentType==1) {
+                    // Add domestic student logic here
+                    Student newStudent(firstName, lastName, idNumber);
+                    //Add to domestic student vector
+					dmtcStudents.push_back(newStudent);
+                    //Add to userData map
+					userDatas[studentEmail] = pwAttempt1;
+					
+                  
+                    
+                } else if(studentType==2) {
+                    // Add international student logic here
+                    Student newStudent(firstName, lastName, idNumber);
+                    //Add to domestic student vector
+					intlStudents.push_back(newStudent);
+                    //Add to userData map
+                    userDatas[studentEmail] = pwAttempt1;
+                   
+                    
+                }
 
                 cout << "\n-----------------------------------------" << endl;
                 cout << "\n-------- REGISTRATION SUCCESSFUL --------" << endl;
                 cout << "\n-----------------------------------------" << endl;
                 cout << "Registration successful for user: "<<studentEmail << endl;
+				cout << "Your ID number is: "<< idNumber << endl;
+				cout << "You can now sign in using your email and password." << endl;
                 cout << "\n";
 
                 //getline
@@ -189,20 +290,42 @@ int main()
 
 
             }
-
+                  
 	        //ADMIN START
             case 3: {
+
+                string username, password;
+                cout << "\n---------------------------------|" << endl;
+                cout << "\n----------ADMIN SIGN IN----------|" << endl;
+                cout << "Enter username and password: " << endl;
+                cout << "Username: ";
+                cin >> username;
+                cout << "Password: ";
+                cin >> password;
+
+                if (adminDatas.find(username) != adminDatas.end() && adminDatas[username] == password) {
+                    cout << "Login successful!\n" << endl;
+					cin.clear();
+                }
+                else {
+
+                    cout << "Invalid username or password." << endl;
+
+                    break;
+                }
                 cout << "\n---------------------------------" << endl;
                 cout << "\n--- Student Management System ---" << endl;
                 cout << "\n---------------------------------" << endl;
                 cout << "\n--------      ADMIN       -------" << endl;
+                cout << "\n---------------------------------" << endl;
+                cout << "\n---------------------------------" << endl;
                 cout << "\n---------------------------------" << endl;
                 cout << "[1] Add Student "<<endl;
                 cout << "[2] Search student by name "<<endl;
                 cout << "[3] View domestic students list "<<endl;
                 cout << "[4] View international students list "<<endl;
                 cout << "[5] View all students list "<<endl;
-                cout << "[6] Quit "<<endl;
+                cout << "[6] Logout "<<endl;
 
                 cin >> option;
 
@@ -253,7 +376,7 @@ int main()
                 }
 
 
-                case 2: {  //SEARCH STUDENT BY NAME
+                case 2: {  //SEARCH STUDENT BY NAME or ID NUMBER
             
                 }
 
