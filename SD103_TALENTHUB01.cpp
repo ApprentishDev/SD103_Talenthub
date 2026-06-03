@@ -17,12 +17,14 @@ private:
     string firstName;
     string lastName;
     int idNumber;
+	int courseCount;
 public:
 
-    User(string firstName, string lastName, int idNumber) {
+    User(string firstName, string lastName, int idNumber, int ccourseCount) {
         this->firstName = firstName;
         this->lastName = lastName;
         this->idNumber = idNumber;
+		this->courseCount = ccourseCount;
     }
 
     void getInfo() {
@@ -30,12 +32,15 @@ public:
         cout << "\n | First name: " << firstName;
         cout << "\n | Last name: " << lastName;
         cout << "\n | ID Number: " << idNumber << endl;
+		cout << "\n | Courses registered: " << courseCount << endl;
     }
 
     string getName() const {
         return firstName + " " + lastName;
     }
 };
+
+
 
 
 
@@ -48,9 +53,12 @@ private:
 public:
 
 
-    Student(string firstName, string lastName, int idNumber) : User(firstName, lastName, idNumber) {
+    Student(string firstName, string lastName, int idNumber, int courseCount) : User(firstName, lastName, idNumber, courseCount) {
     };
 
+    void getInfo() {
+        User::getInfo();
+	}
 
 };
 
@@ -64,6 +72,10 @@ public:
         this->courseName = courseName;
     }
 
+    string getName() {
+        return courseName;
+    }
+
 };
 
 int main()
@@ -75,11 +87,21 @@ int main()
     int signin = 1;
     int option, stOption;
     
-    std::cout << "Hello World!\n";
+    
+    cout << "Hello World!\n";
 
     vector<Student> dmtcStudents;
 
     vector<Student> intlStudents;
+
+    //Vector for available course
+	vector<Course> availableCourses;
+
+    //Vector for courses enrolled
+	vector<Course> coursesEnrolled;
+
+    //Vector for course student list
+    vector<Student> courseStudentList;
 
     //MAP for username and password registered
     map<string, string> userDatas;
@@ -88,26 +110,42 @@ int main()
 	map<string, string> adminDatas;
 
     //-------Sample contents---------------------
-    Student student2("Britney", "Spranks", 20260052);
-    Student student1("Spongebob", "Squarepants", 20262345);
-    Student student3("Batman", "Mbiyonde", 20261998);
+    Student student2("Britney", "Spranks", 20260052, 0);
+    Student student1("Spongebob", "Squarepants", 20262345, 0);
+    Student student3("Batman", "Mbiyonde", 20261998, 0);
 
-    Student student4("Rom", "Jerusalem", 20263119);
+    Student student4("Rom", "Jerusalem", 20263119, 0);
 
     dmtcStudents.push_back(student2);
     dmtcStudents.push_back(student1);
 	intlStudents.push_back(student4);
 	dmtcStudents.push_back(student3);
 
-	userDatas["rjerusalem2016@gmail.com"] = "password123";
-	adminDatas["admin01"] = "admin01";
+	//Sample user data for sign in
+    userDatas["rjerusalem2016@gmail.com"] = "password123";
+	userDatas["rom"] = "rom";
+	userDatas["ram"] = "ram";
+
+    Course course1("Web Development");
+	Course course2("Data Science");
+
+	availableCourses.push_back(course1);
+	availableCourses.push_back(course2);
+
+	
+
+    //-------ADMIN USERS
+	adminDatas["admin01@systems.com"] = "admin01";
+    adminDatas["admin01"] = "admin01";
 
 
-    
-   
-    //STUDENT START
+
+ //-----------------------------------------------------------------------   
+ //   STUDENT START
+
+
     while (program == 1){
-
+    
         cout << "\n---------------------------------|" << endl;
         cout << "\n------------TALENTHUB------------|"<<endl;
         cout << "[1] Student Sign in" << endl;
@@ -120,7 +158,7 @@ int main()
 
             case 1: 
             {
-                signin:
+                
 				cout << "------STUDENT SIGN IN------|" << endl;
 				cout << "[1] Login | [2] Back to main menu" << endl;
 				cin >> signin;
@@ -130,13 +168,14 @@ int main()
                     cin.clear(); // 1. Clear the error flags
                     cin.ignore(numeric_limits<streamsize>::max(), '\n'); // 2. Discard the bad input
 
-                    goto signin;
+                    break;
                 }
                 
                 switch (signin)
                 {
                     case 1:
                     {
+						
                         string username, password;
                         cout << "\n---------------------------------|" << endl;
                         cout << "\n--------STUDENT SIGN IN----------|" << endl;
@@ -157,34 +196,70 @@ int main()
                             break;
                         }
                         
+						system("cls");
                         cout << "\n---------------------------------|" << endl;
                         cout << "\n--- Student Management System ---|" << endl;
                         cout << "\n---------------------------------|" << endl;
                         cout << "\n--------     STUDENT     --------|" << endl;
                         cout << "\n---------------------------------|" << endl;
 
+						cout << "Courses enrolled: " << coursesEnrolled.size() << "/3\n";
+						cout << "\n------------------------------| \n";
+                        for(int i = 0; i < coursesEnrolled.size(); i++) {
+                            cout << "Course [" << i + 1 << "] " << coursesEnrolled[i].getName() << endl;
+                        }
 
-
-                        cout << "\n[1] Sign-up to additional course (0/3)" << endl;
+                        cout << "\n[1] Sign-up to additional course (" << coursesEnrolled.size() << "/3)" << endl;
                         cout << "\n[2] Logout" << endl;
                         cin >> stOption;
                         switch (stOption)
                         {
-                        case 1: 
+                            case 1:
                             {
-                            cout << "[1] Selected\n";
-                            cout << "------------------------------| \n";
-                            cout << "Available courses: \n";
+                                int  courseOption;
+                                cout << "[1] Selected\n";
+                                cout << "------------------------------| \n";
+                                cout << "Available courses: \n";
+                                for (int i = 0; i < availableCourses.size(); i++) 
+                                    {
+                                        cout << "\n[" << i + 1 << "] " << availableCourses[i].getName() << endl;
+                                    }
+                                cout << "Select a course to enroll: \n";
+                                cin >> courseOption;
+                                switch (courseOption)
+                                {
 
-                            break;
+                                    case 1: 
+                                    {
+                                        cout << "[1] " << availableCourses[0].getName() << " selected\n";
+                                        coursesEnrolled.push_back(availableCourses[0]);
+                                        
+										cout << "Successfully enrolled to " << availableCourses[0].getName() << endl;
+                                        break;
+                                    }
+                                    break;
+                                    case 2:
+                                    {
+                                        cout << "[2] " << availableCourses[1].getName() << " selected\n";
+                                        coursesEnrolled.push_back(availableCourses[1]);
+                                        
+										cout << "Successfully enrolled to " << availableCourses[1].getName() << endl;
+                                        break;
+                                    }
+
+                                     
+                                }
+                                
+                                break;
+                            //case 1 end
                             }
 
-                        case 2: 
-                            {
-                            cout << "[2] Selected\n";
-                            run = 0;
-                            break;
-                            }
+                            case 2: 
+                                {
+                                    cout << "[2] Selected\n";
+                                    run = 0;
+                                    break;
+                                }
 
                         }
                     }
@@ -214,20 +289,24 @@ int main()
                 cout << "\n(This will serve as your username)";
                 cout<<"\nEmail: ";
               	cin >> studentEmail;
-                password:
-                cout << "\npassword: ";
-                cin>>pwAttempt1;
-		        cout << "\nConfirm password: ";
-		        cin >> pwAttempt2;
-                if (pwAttempt1 == pwAttempt2) {
-                    goto signup2;
+
+                while (true) {
+                
+                    cout << "\npassword: ";
+                    cin >> pwAttempt1;
+                    cout << "\nConfirm password: ";
+                    cin >> pwAttempt2;
+                    if (pwAttempt1 == pwAttempt2) {
+                        break;
+                    }
+                    else {
+                        cout << "Passwords do not match. Please try again.\n";
+                        
+
+                    }
                 }
-                else {
-			        cout << "Passwords do not match. Please try again.\n";
-                    goto password;
-          
-                }
-                signup2:
+
+                
                 cout << "\nFirst name: ";
                 cin >> firstName;
 				cout << "\nLast name: ";
@@ -256,7 +335,7 @@ int main()
 
                 if(studentType==1) {
                     // Add domestic student logic here
-                    Student newStudent(firstName, lastName, idNumber);
+                    Student newStudent(firstName, lastName, idNumber, 0);
                     //Add to domestic student vector
 					dmtcStudents.push_back(newStudent);
                     //Add to userData map
@@ -266,7 +345,7 @@ int main()
                     
                 } else if(studentType==2) {
                     // Add international student logic here
-                    Student newStudent(firstName, lastName, idNumber);
+                    Student newStudent(firstName, lastName, idNumber, 0);
                     //Add to domestic student vector
 					intlStudents.push_back(newStudent);
                     //Add to userData map
@@ -290,15 +369,15 @@ int main()
 
 
             }
-                  
-	        //ADMIN START
+  //-------------------------------------------------------------------------------------------    
+  //   ADMIN START
             case 3: {
 
                 string username, password;
                 cout << "\n---------------------------------|" << endl;
                 cout << "\n----------ADMIN SIGN IN----------|" << endl;
-                cout << "Enter username and password: " << endl;
-                cout << "Username: ";
+                cout << "Enter given email and password: " << endl;
+                cout << "Email: ";
                 cin >> username;
                 cout << "Password: ";
                 cin >> password;
@@ -313,120 +392,154 @@ int main()
 
                     break;
                 }
-                cout << "\n---------------------------------" << endl;
-                cout << "\n--- Student Management System ---" << endl;
-                cout << "\n---------------------------------" << endl;
-                cout << "\n--------      ADMIN       -------" << endl;
-                cout << "\n---------------------------------" << endl;
-                cout << "\n---------------------------------" << endl;
-                cout << "\n---------------------------------" << endl;
-                cout << "[1] Add Student "<<endl;
-                cout << "[2] Search student by name "<<endl;
-                cout << "[3] View domestic students list "<<endl;
-                cout << "[4] View international students list "<<endl;
-                cout << "[5] View all students list "<<endl;
-                cout << "[6] Logout "<<endl;
 
-                cin >> option;
+				bool adminLoggedIn = true;
+                while (adminLoggedIn) {
+                    cout << "\n---------------------------------" << endl;
+                    cout << "\n--- Student Management System ---" << endl;
+                    cout << "\n---------------------------------" << endl;
+                    cout << "\n--------      ADMIN       -------" << endl;
+                    cout << "\n---------------------------------" << endl;
+                    cout << "\n---------------------------------" << endl;
+                    cout << "\n---------------------------------" << endl;
+                    cout << "[1] Add Student " << endl;
+                    cout << "[2] Search student by name or ID number [WIP]" << endl;
+                    cout << "[3] View domestic students list " << endl;
+                    cout << "[4] View international students list " << endl;
+                    cout << "[5] View all students list " << endl;
+                    cout << "[6] Remove a Student [WIP]" << endl;
+                    cout << "[7] Logout " << endl;
 
-                switch (option) {
-                case 1: { //WORKING
+                    cin >> option;
 
-                    string firstName, lastName;
-                    int idNumber;
-                    int status;
-                    cout << "[1] Selected\n";
-                    //Add student code
-                    cout << "Enter student name: ";
-                    cin >> firstName;
-                    cout << "Enter student last name: ";
-                    cin >> lastName;
-                    cout << "Enter student ID: ";
-                    cin >> idNumber;
-                    cout << "Select the one that applies (1 for Domestic, 2 for International): ";
-                    cin >> status;
+                    switch (option) {
+                    case 1: { //WORKING
 
-                    if (status == 0) {
-                        cout << "Invalid selection. Please select 1 for Domestic or 2 for International.\n";
+                        string firstName, lastName;
+                        int idNumber;
+                        int status;
+                        cout << "[1] Selected\n";
+                        //Add student code
+                        cout << "Enter student name: ";
+                        cin >> firstName;
+                        cout << "Enter student last name: ";
+                        cin >> lastName;
+                        cout << "Enter student ID: ";
+                        cin >> idNumber;
+                        cout << "Select the one that applies (1 for Domestic, 2 for International): ";
+                        cin >> status;
+
+                        if (status == 0) {
+                            cout << "Invalid selection. Please select 1 for Domestic or 2 for International.\n";
+                        }
+                        if (status == 1) {
+                            Student newStudent(firstName, lastName, idNumber, 0);
+                            dmtcStudents.push_back(newStudent);
+
+                            for (int i = 0; i < dmtcStudents.size(); i++) {
+                                dmtcStudents[i].getInfo();
+                            }
+                            break;
+                        }
+                        if (status == 2) {
+                            Student newStudent(firstName, lastName, idNumber, 0);
+                            intlStudents.push_back(newStudent);
+
+                            for (int i = 0; i < intlStudents.size(); i++) {
+                                intlStudents[i].getInfo();
+                            }
+                            break;
+                        }
+                        else {
+                            cout << "Invalid selection. Please select 1 for Domestic or 2 for International.\n";
+                        }
+
+
+                        break;
                     }
-                    if (status == 1) {
-                        Student newStudent(firstName, lastName, idNumber);
-                        dmtcStudents.push_back(newStudent);
 
+
+                    case 2: {  //SEARCH STUDENT BY NAME or ID NUMBER
+
+                    }
+
+                    case 3: { // VIEW DOMESTIC STUDENTS - working
+                        cout << "[3] Selected\n";
+                        cout << "\nDomestic students Enrolled:" << endl;
                         for (int i = 0; i < dmtcStudents.size(); i++) {
                             dmtcStudents[i].getInfo();
                         }
+                        cout << "\n--------------------" << endl;
+                        cout << "Press any key to go back " << endl;
+                        char backValue;
+                        cin >> backValue;
+
                         break;
                     }
-                    if (status == 2) {
-                        Student newStudent(firstName, lastName, idNumber);
-                        intlStudents.push_back(newStudent);
+
+                    case 4: { // VIEW INTERNATIONAL STUDENTS - working
+                        cout << "[4] Selected\n";
+                        cout << "\nInternational students Enrolled:" << endl;
+                        for (int i = 0; i < intlStudents.size(); i++) {
+                            intlStudents[i].getInfo();
+                        }
+                        cout << "\n--------------------" << endl;
+                        cout << "Press any key to go back " << endl;
+                        char backValue;
+                        cin >> backValue;
+
+                        break;
+                    }
+
+                    case 5: { //VIEW ALL STUDENTS - working
+                        cout << "[5] Selected\n";
+                        cout << "\n-------------------------------|" << endl;
+                        cout << "\nDomestic students Enrolled:" << endl;
+                        for (int i = 0; i < dmtcStudents.size(); i++) {
+                            dmtcStudents[i].getInfo();
+                        }
+
+                        cout << "\n--------------------" << endl;
+                        cout << "\n-------------------------------|" << endl;
+                        cout << "\nInternational students enrolled:" << endl;
 
                         for (int i = 0; i < intlStudents.size(); i++) {
                             intlStudents[i].getInfo();
                         }
+                        cout << "\n--------------------" << endl;
+                        cout << "Press any key to go back " << endl;
+                        char backValue;
+                        cin >> backValue;
+
                         break;
                     }
-                    else {
-                        cout << "Invalid selection. Please select 1 for Domestic or 2 for International.\n";
+
+                    case 6: { //REMOVE A STUDENT
+
+						cout << "[6] Selected\n";
+						cout << "Enter the ID number of the student you want to remove: ";
+						int removeId;
+						cin >> removeId;
+						bool found = false;
+
+
+					}
+
+                    case 7: { //LOGOUT
+                        cout << "[7] Selected\n";
+                        adminLoggedIn = false;
+                        break;
+
+
+
                     }
 
 
-                    break;
-                }
-
-
-                case 2: {  //SEARCH STUDENT BY NAME or ID NUMBER
-            
-                }
-
-		        case 3: { // VIEW DOMESTIC STUDENTS 
-			        cout << "[3] Selected\n";
-                    cout << "Domestic students Enrolled:" << endl;
-                    for (int i = 0; i < dmtcStudents.size(); i++) {
-                        dmtcStudents[i].getInfo();
+                     //switch end
                     }
 
-
-                    break;
+				//While adminLoggedIn end
                 }
-
-		        case 4: { // VIEW INTERNATIONAL STUDENTS - working
-                    cout << "[4] Selected\n";
-                    cout << "International students Enrolled:" << endl;
-                    for (int i = 0; i < intlStudents.size(); i++) {
-                        intlStudents[i].getInfo();
-			        }   
-            
-                    break;
-          
-                }
-
-		        case 5: { //VIEW ALL STUDENTS - working
-                    cout << "[5] Selected\n";
-                    cout << "\n-------------------------------|" << endl;
-                    cout << "Domestic students Enrolled:" << endl;
-                    for (int i = 0; i < dmtcStudents.size(); i++) {
-                        dmtcStudents[i].getInfo();
-                    }
-
-                    cout << "\n--------------------" << endl;
-                    cout << "\n-------------------------------|" << endl;
-                    cout << "International students enrolled:" << endl;
-
-                    for (int i = 0; i < intlStudents.size(); i++) {
-                        intlStudents[i].getInfo();
-                    }
-                    cout << "\n--------------------" << endl;
-                    break;
-                }
-
-
-
-
-
-                }
-
 
             //While run==2 end
             }
