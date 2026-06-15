@@ -1,9 +1,9 @@
-# SD103_T*******
-T********* is a mid-sized private training provider based in Wellington, specialising in offering short courses in IT, management, and  language studies. With a current staff of 20 lecturers, they offer six distinct programs.
+# SD103_TALENTHUB
+TALENTHUB is a mid-sized private training provider based in Wellington, specialising in offering short courses in IT, management, and  language studies. With a current staff of 20 lecturers, they offer six distinct programs.
 
 SD103 Integrated Studio | Assessment 2
 
-T********
+TALENTHUB
 
 
 
