@@ -8,7 +8,7 @@
 #include <cctype> //std::isalpha
 #include <random>
 #include <iomanip> // std::setw and std::setfill
-#include <conio.h> 
+#include <conio.h> //bitmasking
 #include <algorithm>
 #include <fstream>  //for file handling
 #include <sstream>
@@ -23,6 +23,7 @@ private:
     string firstName;
     string lastName;
     int idNumber;
+    int age;
     string address;
     string email;
     int phoneNumber;
@@ -36,10 +37,11 @@ private:
 
 public:
 
-    User(string firstName, string lastName, int idNumber, string address, string email, int phoneNumber, int courseCount, string username, string password, string course1, string course2, string course3) {
+    User(string firstName, string lastName, int idNumber, int age, string address, string email, int phoneNumber, int courseCount, string username, string password, string course1, string course2, string course3) {
         this->firstName = firstName;
         this->lastName = lastName;
         this->idNumber = idNumber;
+        this->age = age;
         this->address = address;
         this->email = email;
         this->phoneNumber = phoneNumber;
@@ -60,10 +62,11 @@ public:
         cout << "\n | First name: " << firstName;
         cout << "\n | Last name: " << lastName;
         cout << "\n | ID Number: " << idNumber;
+        cout << "\n | Age: " << age;
         cout << "\n | Address: " << address;
         cout << "\n | E-mail: " << email;
         cout << "\n | Phone number: " << phoneNumber;
-                       
+
     }
     string getfirstName() const {
         return firstName;
@@ -78,6 +81,10 @@ public:
 
     int getidNumber() const {
         return idNumber;
+    }
+
+    int getAge() const {
+        return age;
     }
 
     string getAddress() const {
@@ -126,13 +133,13 @@ private:
 
 public:
 
-    Student(string firstName, string lastName, int idNumber, string address, string email, int phoneNumber, int courseCount, string username, string password, string course1, string course2, string course3)
-        : User(firstName, lastName, idNumber, address, email, phoneNumber, courseCount, username, password, course1, course2, course3) {
+    Student(string firstName, string lastName, int idNumber, int age, string address, string email, int phoneNumber, int courseCount, string username, string password, string course1, string course2, string course3)
+        : User(firstName, lastName, idNumber, age, address, email, phoneNumber, courseCount, username, password, course1, course2, course3) {
     }
 
-    static Student createStudent(string firstName, string lastName, int idNumber, string address, string email, int phoneNumber, int courseCount, string username, string password, string course1, string course2, string course3) {
+    static Student createStudent(string firstName, string lastName, int idNumber, int age, string address, string email, int phoneNumber, int courseCount, string username, string password, string course1, string course2, string course3) {
         // Here, email acts as the username, and we can pass a default or temporary password like "password123"
-        Student s(firstName, lastName, idNumber, address, email, phoneNumber, courseCount, username, password, course1, course2, course3);
+        Student s(firstName, lastName, idNumber, age, address, email, phoneNumber, courseCount, username, password, course1, course2, course3);
         s.enrollCourse(course1);
         s.enrollCourse(course2);
         s.enrollCourse(course3);
@@ -196,7 +203,7 @@ public:
         this->courseName = courseName;
     }
 
-    string getName() {
+    string getName() const {
         return courseName;
     }
 
@@ -207,6 +214,35 @@ void tempKey() {
     tempKey = _getch();
 }
 
+// Reusable function to capture password input securely
+string getMaskedPassword() {
+    string password = "";
+    char character;
+
+    while (true) {
+        character = _getch(); // Read a character without printing it to the screen
+
+        // Check for Enter key (carriage return '\r' or newline '\n')
+        if (character == '\r' || character == '\n') {
+            break;
+        }
+        // Check for Backspace key
+        else if (character == '\b') {
+            if (!password.empty()) {
+                password.pop_back();
+                // Erase the last asterisk from the console view
+                cout << "\b \b";
+            }
+        }
+        // Handle normal visible characters
+        else if (isprint(character)) {
+            password.push_back(character);
+            cout << '*';
+        }
+    }
+    cout << endl; // Move to the next line once Enter is pressed
+    return password;
+}
 
 
 //--- FILE HANDLING FUNCTIONS ---
@@ -221,9 +257,10 @@ void saveStudentsToFile(const string& fileName, const vector<Student>& studentVe
     for (const auto& student : studentVector) {
         // Replace spaces inside strings with a safe delimiter (e.g., pipe '|' character)
         outFile << student.getfirstName() << "|"
-                << student.getlastName() << "|"
-                << student.getidNumber() << "|"
-                << student.getAddress() << "|"
+            << student.getlastName() << "|"
+            << student.getidNumber() << "|"
+            << student.getAge() << "|"
+            << student.getAddress() << "|"
             << student.getEmail() << "|"
             << student.getPhoneNumber() << "|"
             << student.getCourseCount() << "|"
@@ -259,48 +296,57 @@ void loadStudentsFromFile(const string& fileName, vector<Student>& studentVector
 
         stringstream sStream(fileLine);
         string fName, lName, addr, mail, uName, pass, c1, c2, c3, token;
-        int idNum, phoneNum, cCount, extraCount;
+        int idNum = 0, age = 0, phoneNum = 0, cCount = 0, extraCount = 0;
 
-        getline(sStream, fName, '|');
-        getline(sStream, lName, '|');
+        try {
+            getline(sStream, fName, '|');
+            getline(sStream, lName, '|');
 
-        getline(sStream, token, '|');
-        idNum = stoi(token);
+            if (!getline(sStream, token, '|') || token.empty()) continue;
+            idNum = stoi(token);
 
-        getline(sStream, addr, '|');
-        getline(sStream, mail, '|');
+            if (!getline(sStream, token, '|') || token.empty()) continue;
+            age = stoi(token);
 
-        getline(sStream, token, '|');
-        phoneNum = stoi(token);
+            getline(sStream, addr, '|');
+            getline(sStream, mail, '|');
 
-        getline(sStream, token, '|');
-        cCount = stoi(token);
+            if (!getline(sStream, token, '|') || token.empty()) continue;
+            phoneNum = stoi(token);
 
-        getline(sStream, uName, '|');
-        getline(sStream, pass, '|');
-        getline(sStream, c1, '|');
-        getline(sStream, c2, '|');
-        getline(sStream, c3, '|');
+            if (!getline(sStream, token, '|') || token.empty()) continue;
+            cCount = stoi(token);
 
-        getline(sStream, token, '|');
-        extraCount = stoi(token);
+            getline(sStream, uName, '|');
+            getline(sStream, pass, '|');
+            getline(sStream, c1, '|');
+            getline(sStream, c2, '|');
+            getline(sStream, c3, '|');
 
-        Student loadedStudent(fName, lName, idNum, addr, mail, phoneNum, cCount, uName, pass, c1, c2, c3);
+            if (!getline(sStream, token, '|') || token.empty()) continue;
+            extraCount = stoi(token);
 
-        for (int i = 0; i < extraCount; i++) {
-            string extraCourseName;
-            getline(sStream, extraCourseName, '|');
-            if (extraCourseName != c1 && extraCourseName != c2 && extraCourseName != c3) {
-                loadedStudent.enrollCourse(extraCourseName);
+            Student loadedStudent(fName, lName, idNum, age, addr, mail, phoneNum, cCount, uName, pass, c1, c2, c3);
+
+            for (int i = 0; i < extraCount; i++) {
+                string extraCourseName;
+                if (getline(sStream, extraCourseName, '|')) {
+                    if (extraCourseName != c1 && extraCourseName != c2 && extraCourseName != c3) {
+                        loadedStudent.enrollCourse(extraCourseName);
+                    }
+                }
             }
-        }
 
-        studentVector.push_back(loadedStudent);
-        userDatas[uName] = pass; // Sync login mapping records
+            studentVector.push_back(loadedStudent);
+            userDatas[uName] = pass;
+        }
+        catch (const exception& e) {
+            // Skips malformed file lines cleanly without breaking execution flow
+            continue;
+        }
     }
     inFile.close();
 }
-
 int main()
 {
 
@@ -311,7 +357,7 @@ int main()
     int signin = 1;
     int signInOption = 1;
     int option, studentOption;
-   
+
 
 
     cout << "SD013 INTEGRATED STUDIO | TALENTHUB\n";
@@ -339,11 +385,11 @@ int main()
     // --- 2. FALLBACK INITIALIZATION ---
     // Hardcoded items only load if files are empty
     if (dmtcStudents.empty() && intlStudents.empty()) {
-        Student student3("Rom", "Jerusalem", 81008102, "7 Howard Hunter Ave", "rjerusalem2026@gmail.com", 225145, 0, "romulus", "jerusalem", "Fishery", "Planktology", "Burgerpreneur");
-        Student student4("International", "Student", 321, "Bluegrey Avenue", "Email@email.com", 1234567, 0, "username", "password", "Math", "Algebra", "Calculus");
-        Student student5("James", "Wong", 7654, "Stonefields Avenue", "Email@email.com", 1234567, 0, "jWong", "password123", "Mechanical Engineering", "Algebra", "Calculus");
+        Student student3("Rom", "Jerusalem", 81008102, 34, "7 Howard Hunter Ave", "rjerusalem2026@gmail.com", 225145, 0, "romulus", "jerusalem", "Fishery", "Planktology", "Burgerpreneur");
+        Student student4("International", "Student", 321, 4, "Bluegrey Avenue", "Email@email.com", 1234567, 0, "username", "password", "Math", "Algebra", "Calculus");
+        Student student5("James", "Wong", 7654, 24, "Stonefields Avenue", "Email@email.com", 1234567, 0, "jWong", "password123", "Mechanical Engineering", "Algebra", "Calculus");
 
-    
+
         dmtcStudents.push_back(student3);
         intlStudents.push_back(student4);
         intlStudents.push_back(student5);
@@ -359,14 +405,14 @@ int main()
         saveStudentsToFile("international_students.txt", intlStudents);
     }
 
-    Course course1("IT \t\t| Information Systems");
-    Course course2("IT \t\t| Software Development");
-    Course course3("MNGT \t| Business Management");
-    Course course4("MNGT \t| Hotel and Restaurant Management");
-    Course course5("LANG \t| English");
-    Course course6("LANG \t| Te Reo Maori Language");
-    Course course7("CISCO \t| Network Fundamentals");
-    Course course8("CISCO \t| Network Security and Automation");
+    Course course1("IT - Information Systems");
+    Course course2("IT - Software Development");
+    Course course3("MNGT - Business Management");
+    Course course4("MNGT - Hotel and Restaurant Management");
+    Course course5("LANG - English");
+    Course course6("LANG - Te Reo Maori Language");
+    Course course7("CISCO - Network Fundamentals");
+    Course course8("CISCO - Network Security and Automation");
 
     availableCourses.push_back(course1);
     availableCourses.push_back(course2);
@@ -384,12 +430,15 @@ int main()
     //-----------------------------------------------------------------------   
     //   STUDENT START
 
- 
+
 
     while (program == 1) {
 
         cout << "\n---------------------------------|" << endl;
         cout << "\n------------TALENTHUB------------|" << endl;
+        cout << "\n---------------------------------" << endl;
+        cout << "\n--- Student Management System ---" << endl;
+        cout << "\n---------------------------------" << endl;
         cout << "[1] Student Sign in" << endl;
         cout << "[2] Student Sign up" << endl;
         cout << "[3] Admin Sign in" << endl;
@@ -408,14 +457,17 @@ int main()
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 break;
             }
-            
+
             string username, password;
             cout << "\n---------------------------------|" << endl;
             cout << "\n--------STUDENT SIGN IN----------|" << endl;
             cout << "Username: ";
             cin >> username;
             cout << "Password: ";
-            cin >> password;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear trailing newline from 'cin >> username'
+            password = getMaskedPassword();
+
+
 
             Student* currentStudent = nullptr;
             bool isDomesticStudent = false; // Start as false 
@@ -445,9 +497,11 @@ int main()
                 system("cls");
 
                 bool studentLoggedIn = true;
+                
                 while (studentLoggedIn) {
-                    cout << "\n---------------------------------|" << endl;
-                    cout << "\n--- Student Management System ---|" << endl;
+                    cout << "\n---------------------------------" << endl;
+                    cout << "\n--- Student Management System ---" << endl;
+                    cout << "\n---------------------------------" << endl;
                     cout << "Welcome, " << currentStudent->getName() << "!" << endl;
                     cout << "ID No.: " << currentStudent->getidNumber() << endl;;
                     currentStudent->getCourseNames();
@@ -457,32 +511,48 @@ int main()
                     cout << "[2] Logout" << endl;
                     cin >> studentOption;
 
+                    //Catch character input
+                    if (cin.fail()) {
+                        cin.clear(); // Clear the error flag
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard the bad input
+                        cout << "Invalid input! Please enter a number.\n";
+                        continue; // Skip the rest of the loop and ask again
+                    }
+
                     if (studentOption == 1) {
-                        int courseOption;
-                        cout << "Available courses: \n";
-                        cout << "[0] Cancel \n";
-                        for (int i = 0; i < availableCourses.size(); i++) {
-                            cout << "[" << i + 1 << "] " << availableCourses[i].getName() << endl;
-                        }
-                        cout << "\nSelect a course to enroll: \n";
-                        cin >> courseOption;
+                        //Code here - check courseCount
 
-                        if (courseOption >= 1 && courseOption <= availableCourses.size()) {
-                            string selectedCourse = availableCourses[courseOption - 1].getName();
-                            currentStudent->enrollCourse(selectedCourse);
-
-                            // SAVE INSTANTLY ON ENROLLMENT
-                            if (isDomesticStudent) {
-                                saveStudentsToFile("domestic_students.txt", dmtcStudents);
-                            }
-                            else {
-                                saveStudentsToFile("international_students.txt", intlStudents);
-                            }
-
-                            cout << "\nSuccessfully enrolled in " << selectedCourse << "!\n";
+                        if (currentStudent->getCoursesEnrolledList().size() >= 3) {
+                            cout << "\n[Error] Enrollment failed! You can only enroll in a maximum of 3 courses.\n";
+                            cout << "Please contact Admin before adding a new one.\n";
                         }
                         else {
-                            cout << "\nInvalid course option.\n";
+                            int courseOption;
+                            cout << "Available courses: \n";
+                            cout << "[0] Cancel \n";
+                            for (int i = 0; i < availableCourses.size(); i++) {
+                                cout << "[" << i + 1 << "] " << availableCourses[i].getName() << endl;
+                            }
+                            cout << "\nSelect a course to enroll: \n";
+                            cin >> courseOption;
+
+                            if (courseOption >= 1 && courseOption <= availableCourses.size()) {
+                                string selectedCourse = availableCourses[courseOption - 1].getName();
+                                currentStudent->enrollCourse(selectedCourse);
+
+                                // SAVE INSTANTLY ON ENROLLMENT
+                                if (isDomesticStudent) {
+                                    saveStudentsToFile("domestic_students.txt", dmtcStudents);
+                                }
+                                else {
+                                    saveStudentsToFile("international_students.txt", intlStudents);
+                                }
+
+                                cout << "\nSuccessfully enrolled in " << selectedCourse << "!\n";
+                            }
+                            else {
+                                cout << "\nInvalid course option.\n";
+                            }
                         }
                     }
                     else if (studentOption == 2) {
@@ -498,7 +568,7 @@ int main()
 
                         studentLoggedIn = false;
                     }
-                    else if (studentOption == 0) {
+                    else {
                         break;
                     }
                 }
@@ -513,7 +583,7 @@ int main()
         case 2: {
             string pwAttempt1, pwAttempt2;
             string studentEmail, firstName, lastName, address;
-            int idNumber, mobileNumber, studentType;
+            int idNumber, age, mobileNumber, studentType;
             bool domestic = true;
             cout << "\n---------------------------------" << endl;
             cout << "\n--- Student Management System ---" << endl;
@@ -529,19 +599,19 @@ int main()
             cin >> studentEmail;
 
             while (true) {
-
                 cout << "\npassword: ";
-                cin >> pwAttempt1;
-                cout << "\nConfirm password: ";
-                cin >> pwAttempt2;
-                if (pwAttempt1 == pwAttempt2) {
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear trailing newline from 'cin >> studentEmail'
+                pwAttempt1 = getMaskedPassword();
 
+                cout << "\nConfirm password: ";
+                // No cin.ignore needed here because getMaskedPassword() cleans up after itself
+                pwAttempt2 = getMaskedPassword();
+
+                if (pwAttempt1 == pwAttempt2) {
                     break;
                 }
                 else {
                     cout << "Passwords do not match. Please try again.\n";
-
-
                 }
             }
 
@@ -550,7 +620,8 @@ int main()
             cin >> firstName;
             cout << "\nLast name: ";
             cin >> lastName;
-
+            cout << "\nEnter age: ";
+            cin >> age;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "\nAddress: ( #  Street , Suburb , City ) ";
             cin.ignore();
@@ -572,17 +643,41 @@ int main()
 
             vector <int> student_numbers;
             int newStudentNumber = 20260000 + random_num;
+            bool isDuplicate;
+
+            //verify new generated id number doesn't exist
+            // 1. Loop guarantees a unique ID across BOTH vectors
+            do {
+                // Generate the random number INSIDE the loop so it changes on every retry
+                int random_num = distrib(gen);
+                newStudentNumber = 20260000 + random_num;
+
+                // Check domestic vector
+                auto itDmtc = find_if(dmtcStudents.begin(), dmtcStudents.end(),
+                    [&newStudentNumber](const Student& s) { return s.getidNumber() == newStudentNumber; });
+
+                // Check international vector
+                auto itIntl = find_if(intlStudents.begin(), intlStudents.end(),
+                    [&newStudentNumber](const Student& s) { return s.getidNumber() == newStudentNumber; });
+
+                // True if found in either vector
+                isDuplicate = (itDmtc != dmtcStudents.end()) || (itIntl != intlStudents.end());
+
+            } while (isDuplicate); // Keep looping if a duplicate was found
+
             idNumber = newStudentNumber;
 
+
+
             if (studentType == 1) {
-                Student newStudent(firstName, lastName, idNumber, address, studentEmail, mobileNumber, 0, studentEmail, pwAttempt1, "None", "None", "None");
+                Student newStudent(firstName, lastName, idNumber, age, address, studentEmail, mobileNumber, 0, studentEmail, pwAttempt1, "None", "None", "None");
                 dmtcStudents.push_back(newStudent);
                 userDatas[studentEmail] = pwAttempt1;
                 // SAVE UPON REGISTRATION
                 saveStudentsToFile("domestic_students.txt", dmtcStudents);
             }
             else if (studentType == 2) {
-                Student newStudent(firstName, lastName, idNumber, address, studentEmail, mobileNumber, 0, studentEmail, pwAttempt1, "None", "None", "None");
+                Student newStudent(firstName, lastName, idNumber, age, address, studentEmail, mobileNumber, 0, studentEmail, pwAttempt1, "None", "None", "None");
                 intlStudents.push_back(newStudent);
                 userDatas[studentEmail] = pwAttempt1;
                 // SAVE UPON REGISTRATION
@@ -616,7 +711,9 @@ int main()
             cout << "Email: ";
             cin >> username;
             cout << "Password: ";
-            cin >> password;
+
+            // REMOVED cin.ignore here so it doesn't swallow the first character of the password
+            password = getMaskedPassword();
 
             if (adminDatas.find(username) != adminDatas.end() && adminDatas[username] == password) {
                 cout << "Login successful!\n" << endl;
@@ -624,9 +721,7 @@ int main()
                 system("cls");
             }
             else {
-
                 cout << "Invalid username or password." << endl;
-
                 break;
             }
 
@@ -649,6 +744,14 @@ int main()
                 cout << "[0] Logout " << endl;
 
                 cin >> option;
+                //Catches alphabet input
+                if (cin.fail()) {
+                    cin.clear(); // Reset the stream error flags so cin can work again
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Purge the invalid letters from memory
+                    system("cls");
+                    cout << " Error: Invalid choice. Please select using numbers only (0-6).\n";
+                    continue; // Redirects straight back to the start of the menu loop
+                }
 
                 switch (option) {
 
@@ -683,12 +786,12 @@ int main()
                     else {
                         // Search domestic by Name
                         auto it = find_if(dmtcStudents.begin(), dmtcStudents.end(),
-                            [&searchInput](const Student& s) { return s.getfirstName() == searchInput; });
+                            [&searchInput](const Student& s) { return s.getfirstName() == searchInput || s.getlastName() == searchInput; });
                         if (it != dmtcStudents.end()) foundDomestic = &(*it);
 
                         // Search international by Name
                         auto it2 = find_if(intlStudents.begin(), intlStudents.end(),
-                            [&searchInput](const Student& s) { return s.getfirstName() == searchInput; });
+                            [&searchInput](const Student& s) { return s.getfirstName() == searchInput || s.getlastName() == searchInput; });
                         if (it2 != intlStudents.end()) foundInternational = &(*it2);
                     }
 
@@ -767,6 +870,9 @@ int main()
                     int targetId;
                     cin >> targetId;
 
+                    cin.clear(); //Purge / clear input
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
                     Student* foundStudent = nullptr;
                     bool isDomestic = true;
 
@@ -802,7 +908,7 @@ int main()
 
                         cout << "Enter the exact name of the course you want to drop: ";
                         string courseToDrop;
-                        cin.ignore(); // Clears any dangling newline characters out of cin
+
                         getline(cin, courseToDrop); // Allows spaces in course names like "Data Science"
 
                         if (foundStudent->removeCourse(courseToDrop)) {
@@ -939,15 +1045,22 @@ int main()
 
     Rework: Search student by name or idNumber
 
-    File Handling: 
+    File Handling:
         - Ouput data file after registration
         - Updates data after enrollment
 
     ADMIN / can remove student from course or database
 
     Program accepts Whole address line input
-       
 
+    Issues:
 
+    format of Courses showing in student's details
+    "MNGT " instead of "MNGT \t| Business Management"
+
+//Update: 22 JUNE 2026
+
+    1-Password masking(student and admin) - done
+    2-Student courses limit to (x3) - done
 
 */
