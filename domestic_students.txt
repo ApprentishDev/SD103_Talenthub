@@ -1,0 +1,5 @@
+Rom|Jerusalem|81008102|34|7 Howard Hunter Ave|rjerusalem2026@gmail.com|225145|0|romulus|jerusalem|Fishery|Planktology|Burgerpreneur|0
+Liam|Smith|20269799|26|4 Grey Street, Wellington Central, Wellington|lsmith2026@gmail.com|215551234|0|lsmith2026@gmail.com|pword123|None|None|None|0
+Emma|Taylor|20264987|27|2 Ponsonby Road, Ponsonby, Auckland|etaylor99@yahoo.com|224449876|0|etaylor99@yahoo.com|pword123|None|None|None|0
+Noah|Williams|20268142|29|05 Riccarton Road, Riccarton, Christchurch|nwilliams@hotmail.com|273334561|0|nwilliams@hotmail.com|pword123|None|None|None|3|IT - Information Systems|IT - Software Development|MNGT - Hotel and Restaurant Management
+Olivia|Brown|20265046|28|3 George Street, Dunedin Central, Dunedin|obrown.nz@outlook.com|218882345|0|obrown.nz@outlook.com|pword123|None|None|None|0

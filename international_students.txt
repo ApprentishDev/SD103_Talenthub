@@ -1,0 +1,6 @@
+International|Student|321|4|Bluegrey Avenue|Email@email.com|1234567|0|username|password|Math|Algebra|Calculus|0
+James|Wong|7654|24|Stonefields Avenue|Email@email.com|1234567|0|jWong|password123|Mechanical Engineering|Algebra|Calculus|0
+Ramza|Gafgaria|20267297|24|6 Manukau Station Rd, Auckland 2104|rGafgaria@yoobee.nz|216648524|0|rGafgaria@yoobee.nz|pword123|None|None|None|3|LANG - English|CISCO - Network Fundamentals|CISCO - Network Security and Automation
+Matteo|Rossi|20262883|31|6 Tennyson Street, Napier South, Napier|mrossi.nz@yahoo.com|223334455|0|mrossi.nz@yahoo.com|pword123|None|None|None|0
+Nikolai|Petrovic|20265168|31|1 Kamo Road, Kensington, Whangarei|npetrovic@outlook.com|21222445|0|npetrovic@outlook.com|pword123|None|None|None|0
+Sofia|Vega|20267367|25|09 Colombo Street, Sydenham, Christchurch|svega95@yahoo.com|217779900|0|svega95@yahoo.com|pword123|None|None|None|0
