@@ -347,6 +347,33 @@ void loadStudentsFromFile(const string& fileName, vector<Student>& studentVector
     }
     inFile.close();
 }
+
+bool isValidPassword(const string& password)
+{
+    bool hasNumber = false;
+    bool hasSymbol = false;
+
+    if (password.length() < 8)
+    {
+        return false;
+    }
+
+    for (char ch : password)
+    {
+        if (isdigit(static_cast<unsigned char>(ch)))
+        {
+            hasNumber = true;
+        }
+        else if (!isalnum(static_cast<unsigned char>(ch)))
+        {
+            hasSymbol = true;
+        }
+    }
+
+    return hasNumber && hasSymbol;
+}
+
+
 int main()
 {
 
@@ -457,7 +484,7 @@ int main()
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 break;
             }
-
+            
             string username, password;
             cout << "\n---------------------------------|" << endl;
             cout << "\n--------STUDENT SIGN IN----------|" << endl;
@@ -466,7 +493,7 @@ int main()
             cout << "Password: ";
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear trailing newline from 'cin >> username'
             password = getMaskedPassword();
-
+            
 
 
             Student* currentStudent = nullptr;
@@ -585,6 +612,7 @@ int main()
             string studentEmail, firstName, lastName, address;
             int idNumber, age, mobileNumber, studentType;
             bool domestic = true;
+            bool validPassword = false;
             cout << "\n---------------------------------" << endl;
             cout << "\n--- Student Management System ---" << endl;
             cout << "\n---------------------------------" << endl;
@@ -597,21 +625,33 @@ int main()
             cout << "\n(This will serve as your username)";
             cout << "\nEmail: ";
             cin >> studentEmail;
-
-            while (true) {
-                cout << "\npassword: ";
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear trailing newline from 'cin >> studentEmail'
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            while (true)
+            {
+                cout << "\nPassword: ";
+                
                 pwAttempt1 = getMaskedPassword();
 
-                cout << "\nConfirm password: ";
-                // No cin.ignore needed here because getMaskedPassword() cleans up after itself
+                if (!isValidPassword(pwAttempt1))
+                {
+                    cout << "\nPassword must:"
+                        << "\n- Be at least 8 characters long"
+                        << "\n- Contain at least one number"
+                        << "\n- Contain at least one symbol"
+                        << "\nPlease try again.\n";
+                    continue;
+                }
+
+                cout << "\nConfirm Password: ";
                 pwAttempt2 = getMaskedPassword();
 
-                if (pwAttempt1 == pwAttempt2) {
+                if (pwAttempt1 == pwAttempt2)
+                {
                     break;
                 }
-                else {
-                    cout << "Passwords do not match. Please try again.\n";
+                else
+                {
+                    cout << "\nPasswords do not match. Please try again.\n";
                 }
             }
 
